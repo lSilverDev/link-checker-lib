@@ -1,5 +1,30 @@
+import fs from 'fs';
 import chalk from 'chalk';
 
-console.log(chalk.blue('hello world'));
-console.log('São geralmente recuperados a partir de um objeto [FileList](https://developer.mozilla.org/pt-BR/docs/Web/API/FileList) que é retornado como resultado da seleção, pelo usuário, de arquivos através do elemento [<input>](https://developer.mozilla.org/pt-BR/docs/Web/HTML/Element/Input), a partir do objeto [DataTransfer](https://developer.mozilla.org/pt-BR/docs/Web/API/');
-console.log('São geralmente recuperados a partir de um objeto [FileList](https://developer.mozilla.org/pt-BR/docs/Web/API/FileList) que é retornado como resultado da seleção, pelo usuário, de arquivos através do elemento [<input>](https://developer.mozilla.org/pt-BR/docs/Web/HTML/Element/Input), a partir do objeto [DataTransfer](https://developer.mozilla.org/pt-BR/docs/Web/API/');
+function handlesError(error){
+    throw new Error(chalk.red(error.code, ': don\'t have a file in the specified dir'));
+}
+
+async function takeFile(path){
+    const encode = "utf-8";
+
+    fs.promises.readFile(path, encode)
+        .then((content) => console.log(chalk.blue(content)))
+        .catch((error) => handlesError(error));
+
+}
+
+//Sync
+// function takeFile(path){
+//     const encode = "utf-8";
+
+//     fs.readFile(path, encode, (error, content) =>{
+//         if(error){
+//             handlesError(error);
+//         }
+        
+//         console.log(chalk.blue(content));
+//     });
+// }
+
+takeFile("./files/text.md");
