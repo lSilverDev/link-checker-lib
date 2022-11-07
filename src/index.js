@@ -26,4 +26,4 @@ function handlesError(error){
     throw new Error(chalk.red(error.code));
 }
 
-takeFile("./files/text.md");
+export default takeFile;
