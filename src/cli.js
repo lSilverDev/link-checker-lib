@@ -4,12 +4,14 @@ import chalk from 'chalk';
 
 const path = process.argv;
 
-function printList(result){
-    console.log(chalk.yellow('Link list: '), result);
-}
-
 async function textProcess(args){
     const path = args[2];
+
+    try{
+        fs.lstatSync(path);
+    } catch(error) {
+        handlesError(error);
+    }
 
     if(fs.lstatSync(path).isFile()){
         const result = await takeFile(path);
@@ -20,10 +22,26 @@ async function textProcess(args){
         
         files.forEach(async (file) => {
             const results = await takeFile(`${path}/${file}`);
-            printList(results);
+            printList(results, file);
         });
     }
 }
 
+function handlesError(error){
+    if(error.code === 'ENOENT'){
+        printList("File or directory dont exist!", "ERROR: ");
+        return;
+    }
+    else {
+        throw new Error(chalk.red(error.code));
+    }
+}
+
+function printList(result, id = ""){
+    console.log(
+        chalk.yellow(id),
+        result
+    );
+}
 textProcess(path);
 
