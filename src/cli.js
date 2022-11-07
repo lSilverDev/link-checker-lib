@@ -1,11 +1,13 @@
 import fs from 'fs';
-import takeFile from './index.js';
 import chalk from 'chalk';
+import takeFile from './index.js';
+import listValidated from './http-validation.js';
 
 const path = process.argv;
 
 async function textProcess(args){
     const path = args[2];
+    const validates = args[3] === '--validate';
 
     try{
         fs.lstatSync(path);
@@ -15,14 +17,14 @@ async function textProcess(args){
 
     if(fs.lstatSync(path).isFile()){
         const result = await takeFile(path);
-        printList(result);
+        printList(validates, result);
     }
     else if(fs.lstatSync(path).isDirectory()){
         const files = await fs.promises.readdir(path);
         
         files.forEach(async (file) => {
             const results = await takeFile(`${path}/${file}`);
-            printList(results, file);
+            printList(validates, results, file);
         });
     }
 }
@@ -37,11 +39,21 @@ function handlesError(error){
     }
 }
 
-function printList(result, id = ""){
-    console.log(
-        chalk.yellow(id),
-        result
-    );
+async function printList(valida, result, id = ""){
+    if(valida){
+        console.log(
+            chalk.yellow("Validated List: "),
+            chalk.yellow(id),
+            await listValidated(result)
+        );
+    } else {
+        console.log(
+            chalk.yellow(id),
+            result
+        );
+    }
 }
+
 textProcess(path);
+//To exec just run : npm run cli '<path>' || node src/cli ./files/ --validate
 
